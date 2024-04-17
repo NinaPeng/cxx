@@ -21,7 +21,7 @@
 #endif
 
 namespace rust {
-inline namespace cxxbridge1 {
+inline namespace cxxbridge2 {
 
 struct unsafe_bitcopy_t;
 
@@ -30,8 +30,8 @@ template <typename T>
 class impl;
 }
 
-#ifndef CXXBRIDGE1_RUST_STRING
-#define CXXBRIDGE1_RUST_STRING
+#ifndef CXXBRIDGE2_RUST_STRING
+#define CXXBRIDGE2_RUST_STRING
 // https://cxx.rs/binding/string.html
 class String final {
 public:
@@ -100,10 +100,10 @@ private:
   // Size and alignment statically verified by rust_string.rs.
   std::array<std::uintptr_t, 3> repr;
 };
-#endif // CXXBRIDGE1_RUST_STRING
+#endif // CXXBRIDGE2_RUST_STRING
 
-#ifndef CXXBRIDGE1_RUST_STR
-#define CXXBRIDGE1_RUST_STR
+#ifndef CXXBRIDGE2_RUST_STR
+#define CXXBRIDGE2_RUST_STR
 // https://cxx.rs/binding/str.html
 class Str final {
 public:
@@ -150,9 +150,9 @@ private:
 
   std::array<std::uintptr_t, 2> repr;
 };
-#endif // CXXBRIDGE1_RUST_STR
+#endif // CXXBRIDGE2_RUST_STR
 
-#ifndef CXXBRIDGE1_RUST_SLICE
+#ifndef CXXBRIDGE2_RUST_SLICE
 namespace detail {
 template <bool>
 struct copy_assignable_if {};
@@ -246,9 +246,9 @@ private:
   void *pos;
   std::size_t stride;
 };
-#endif // CXXBRIDGE1_RUST_SLICE
+#endif // CXXBRIDGE2_RUST_SLICE
 
-#ifndef CXXBRIDGE1_RUST_BOX
+#ifndef CXXBRIDGE2_RUST_BOX
 // https://cxx.rs/binding/box.html
 template <typename T>
 class Box final {
@@ -295,9 +295,9 @@ private:
 
   T *ptr;
 };
-#endif // CXXBRIDGE1_RUST_BOX
+#endif // CXXBRIDGE2_RUST_BOX
 
-#ifndef CXXBRIDGE1_RUST_VEC
+#ifndef CXXBRIDGE2_RUST_VEC
 // https://cxx.rs/binding/vec.html
 template <typename T>
 class Vec final {
@@ -362,9 +362,9 @@ private:
   // Size and alignment statically verified by rust_vec.rs.
   std::array<std::uintptr_t, 3> repr;
 };
-#endif // CXXBRIDGE1_RUST_VEC
+#endif // CXXBRIDGE2_RUST_VEC
 
-#ifndef CXXBRIDGE1_RUST_FN
+#ifndef CXXBRIDGE2_RUST_FN
 // https://cxx.rs/binding/fn.html
 template <typename Signature>
 class Fn;
@@ -379,10 +379,10 @@ private:
   Ret (*trampoline)(Args..., void *fn) noexcept;
   void *fn;
 };
-#endif // CXXBRIDGE1_RUST_FN
+#endif // CXXBRIDGE2_RUST_FN
 
-#ifndef CXXBRIDGE1_RUST_ERROR
-#define CXXBRIDGE1_RUST_ERROR
+#ifndef CXXBRIDGE2_RUST_ERROR
+#define CXXBRIDGE2_RUST_ERROR
 // https://cxx.rs/binding/result.html
 class Error final : public std::exception {
 public:
@@ -401,22 +401,22 @@ private:
   const char *msg;
   std::size_t len;
 };
-#endif // CXXBRIDGE1_RUST_ERROR
+#endif // CXXBRIDGE2_RUST_ERROR
 
-#ifndef CXXBRIDGE1_RUST_ISIZE
-#define CXXBRIDGE1_RUST_ISIZE
+#ifndef CXXBRIDGE2_RUST_ISIZE
+#define CXXBRIDGE2_RUST_ISIZE
 #if defined(_WIN32)
 using isize = SSIZE_T;
 #else
 using isize = ssize_t;
 #endif
-#endif // CXXBRIDGE1_RUST_ISIZE
+#endif // CXXBRIDGE2_RUST_ISIZE
 
 std::ostream &operator<<(std::ostream &, const String &);
 std::ostream &operator<<(std::ostream &, const Str &);
 
-#ifndef CXXBRIDGE1_RUST_OPAQUE
-#define CXXBRIDGE1_RUST_OPAQUE
+#ifndef CXXBRIDGE2_RUST_OPAQUE
+#define CXXBRIDGE2_RUST_OPAQUE
 // Base class of generated opaque Rust types.
 class Opaque {
 public:
@@ -424,7 +424,7 @@ public:
   Opaque(const Opaque &) = delete;
   ~Opaque() = delete;
 };
-#endif // CXXBRIDGE1_RUST_OPAQUE
+#endif // CXXBRIDGE2_RUST_OPAQUE
 
 template <typename T>
 std::size_t size_of();
@@ -484,14 +484,14 @@ using is_relocatable = IsRelocatable<T>;
 ////////////////////////////////////////////////////////////////////////////////
 /// end public API, begin implementation details
 
-#ifndef CXXBRIDGE1_PANIC
-#define CXXBRIDGE1_PANIC
+#ifndef CXXBRIDGE2_PANIC
+#define CXXBRIDGE2_PANIC
 template <typename Exception>
 void panic [[noreturn]] (const char *msg);
-#endif // CXXBRIDGE1_PANIC
+#endif // CXXBRIDGE2_PANIC
 
-#ifndef CXXBRIDGE1_RUST_FN
-#define CXXBRIDGE1_RUST_FN
+#ifndef CXXBRIDGE2_RUST_FN
+#define CXXBRIDGE2_RUST_FN
 template <typename Ret, typename... Args>
 Ret Fn<Ret(Args...)>::operator()(Args... args) const noexcept {
   return (*this->trampoline)(std::forward<Args>(args)..., this->fn);
@@ -501,22 +501,22 @@ template <typename Ret, typename... Args>
 Fn<Ret(Args...)> Fn<Ret(Args...)>::operator*() const noexcept {
   return *this;
 }
-#endif // CXXBRIDGE1_RUST_FN
+#endif // CXXBRIDGE2_RUST_FN
 
-#ifndef CXXBRIDGE1_RUST_BITCOPY_T
-#define CXXBRIDGE1_RUST_BITCOPY_T
+#ifndef CXXBRIDGE2_RUST_BITCOPY_T
+#define CXXBRIDGE2_RUST_BITCOPY_T
 struct unsafe_bitcopy_t final {
   explicit unsafe_bitcopy_t() = default;
 };
-#endif // CXXBRIDGE1_RUST_BITCOPY_T
+#endif // CXXBRIDGE2_RUST_BITCOPY_T
 
-#ifndef CXXBRIDGE1_RUST_BITCOPY
-#define CXXBRIDGE1_RUST_BITCOPY
+#ifndef CXXBRIDGE2_RUST_BITCOPY
+#define CXXBRIDGE2_RUST_BITCOPY
 constexpr unsafe_bitcopy_t unsafe_bitcopy{};
-#endif // CXXBRIDGE1_RUST_BITCOPY
+#endif // CXXBRIDGE2_RUST_BITCOPY
 
-#ifndef CXXBRIDGE1_RUST_SLICE
-#define CXXBRIDGE1_RUST_SLICE
+#ifndef CXXBRIDGE2_RUST_SLICE
+#define CXXBRIDGE2_RUST_SLICE
 template <typename T>
 Slice<T>::Slice() noexcept {
   sliceInit(this, reinterpret_cast<void *>(align_of<T>()), 0);
@@ -712,10 +712,10 @@ template <typename T>
 void Slice<T>::swap(Slice &rhs) noexcept {
   std::swap(*this, rhs);
 }
-#endif // CXXBRIDGE1_RUST_SLICE
+#endif // CXXBRIDGE2_RUST_SLICE
 
-#ifndef CXXBRIDGE1_RUST_BOX
-#define CXXBRIDGE1_RUST_BOX
+#ifndef CXXBRIDGE2_RUST_BOX
+#define CXXBRIDGE2_RUST_BOX
 template <typename T>
 class Box<T>::uninit {};
 
@@ -824,10 +824,10 @@ T *Box<T>::into_raw() noexcept {
 
 template <typename T>
 Box<T>::Box(uninit) noexcept {}
-#endif // CXXBRIDGE1_RUST_BOX
+#endif // CXXBRIDGE2_RUST_BOX
 
-#ifndef CXXBRIDGE1_RUST_VEC
-#define CXXBRIDGE1_RUST_VEC
+#ifndef CXXBRIDGE2_RUST_VEC
+#define CXXBRIDGE2_RUST_VEC
 template <typename T>
 Vec<T>::Vec(std::initializer_list<T> init) : Vec{} {
   this->reserve_total(init.size());
@@ -1001,10 +1001,10 @@ void Vec<T>::swap(Vec &rhs) noexcept {
 // Internal API only intended for the cxxbridge code generator.
 template <typename T>
 Vec<T>::Vec(unsafe_bitcopy_t, const Vec &bits) noexcept : repr(bits.repr) {}
-#endif // CXXBRIDGE1_RUST_VEC
+#endif // CXXBRIDGE2_RUST_VEC
 
-#ifndef CXXBRIDGE1_IS_COMPLETE
-#define CXXBRIDGE1_IS_COMPLETE
+#ifndef CXXBRIDGE2_IS_COMPLETE
+#define CXXBRIDGE2_IS_COMPLETE
 namespace detail {
 namespace {
 template <typename T, typename = std::size_t>
@@ -1013,10 +1013,10 @@ template <typename T>
 struct is_complete<T, decltype(sizeof(T))> : std::true_type {};
 } // namespace
 } // namespace detail
-#endif // CXXBRIDGE1_IS_COMPLETE
+#endif // CXXBRIDGE2_IS_COMPLETE
 
-#ifndef CXXBRIDGE1_LAYOUT
-#define CXXBRIDGE1_LAYOUT
+#ifndef CXXBRIDGE2_LAYOUT
+#define CXXBRIDGE2_LAYOUT
 class layout {
   template <typename T>
   friend std::size_t size_of();
@@ -1069,10 +1069,10 @@ template <typename T>
 std::size_t align_of() {
   return layout::align_of<T>();
 }
-#endif // CXXBRIDGE1_LAYOUT
+#endif // CXXBRIDGE2_LAYOUT
 
-#ifndef CXXBRIDGE1_RELOCATABLE
-#define CXXBRIDGE1_RELOCATABLE
+#ifndef CXXBRIDGE2_RELOCATABLE
+#define CXXBRIDGE2_RELOCATABLE
 namespace detail {
 template <typename... Ts>
 struct make_void {
@@ -1106,7 +1106,7 @@ struct IsRelocatable
           std::integral_constant<
               bool, std::is_trivially_move_constructible<T>::value &&
                         std::is_trivially_destructible<T>::value>>::type {};
-#endif // CXXBRIDGE1_RELOCATABLE
+#endif // CXXBRIDGE2_RELOCATABLE
 
-} // namespace cxxbridge1
+} // namespace cxxbridge2
 } // namespace rust

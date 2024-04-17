@@ -250,7 +250,7 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
     let operator_ord = derive::contains(&strct.derives, Trait::PartialOrd);
 
     out.set_namespace(&strct.name.namespace);
-    let guard = format!("CXXBRIDGE1_STRUCT_{}", strct.name.to_symbol());
+    let guard = format!("CXXBRIDGE2_STRUCT_{}", strct.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &strct.doc);
@@ -345,7 +345,7 @@ fn write_struct_using(out: &mut OutFile, ident: &Pair) {
 
 fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[&ExternFn]) {
     out.set_namespace(&ety.name.namespace);
-    let guard = format!("CXXBRIDGE1_STRUCT_{}", ety.name.to_symbol());
+    let guard = format!("CXXBRIDGE2_STRUCT_{}", ety.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &ety.doc);
@@ -395,7 +395,7 @@ fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
         EnumRepr::Native { atom, .. } => *atom,
     };
     out.set_namespace(&enm.name.namespace);
-    let guard = format!("CXXBRIDGE1_ENUM_{}", enm.name.to_symbol());
+    let guard = format!("CXXBRIDGE2_ENUM_{}", enm.name.to_symbol());
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &enm.doc);
@@ -1418,7 +1418,7 @@ fn write_generic_instantiations(out: &mut OutFile) {
     out.end_block(Block::ExternC);
 
     out.begin_block(Block::Namespace("rust"));
-    out.begin_block(Block::InlineNamespace("cxxbridge1"));
+    out.begin_block(Block::InlineNamespace("cxxbridge2"));
     for impl_key in out.types.impls.keys() {
         match *impl_key {
             ImplKey::RustBox(ident) => write_rust_box_impl(out, ident),
@@ -1426,7 +1426,7 @@ fn write_generic_instantiations(out: &mut OutFile) {
             _ => {}
         }
     }
-    out.end_block(Block::InlineNamespace("cxxbridge1"));
+    out.end_block(Block::InlineNamespace("cxxbridge2"));
     out.end_block(Block::Namespace("rust"));
 }
 
@@ -1437,17 +1437,17 @@ fn write_rust_box_extern(out: &mut OutFile, key: NamedImplKey) {
 
     writeln!(
         out,
-        "{} *cxxbridge1$box${}$alloc() noexcept;",
+        "{} *cxxbridge2$box${}$alloc() noexcept;",
         inner, instance,
     );
     writeln!(
         out,
-        "void cxxbridge1$box${}$dealloc({} *) noexcept;",
+        "void cxxbridge2$box${}$dealloc({} *) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "void cxxbridge1$box${}$drop(::rust::Box<{}> *ptr) noexcept;",
+        "void cxxbridge2$box${}$drop(::rust::Box<{}> *ptr) noexcept;",
         instance, inner,
     );
 }
@@ -1461,42 +1461,42 @@ fn write_rust_vec_extern(out: &mut OutFile, key: NamedImplKey) {
 
     writeln!(
         out,
-        "void cxxbridge1$rust_vec${}$new(::rust::Vec<{}> const *ptr) noexcept;",
+        "void cxxbridge2$rust_vec${}$new(::rust::Vec<{}> const *ptr) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "void cxxbridge1$rust_vec${}$drop(::rust::Vec<{}> *ptr) noexcept;",
+        "void cxxbridge2$rust_vec${}$drop(::rust::Vec<{}> *ptr) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "::std::size_t cxxbridge1$rust_vec${}$len(::rust::Vec<{}> const *ptr) noexcept;",
+        "::std::size_t cxxbridge2$rust_vec${}$len(::rust::Vec<{}> const *ptr) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "::std::size_t cxxbridge1$rust_vec${}$capacity(::rust::Vec<{}> const *ptr) noexcept;",
+        "::std::size_t cxxbridge2$rust_vec${}$capacity(::rust::Vec<{}> const *ptr) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "{} const *cxxbridge1$rust_vec${}$data(::rust::Vec<{0}> const *ptr) noexcept;",
+        "{} const *cxxbridge2$rust_vec${}$data(::rust::Vec<{0}> const *ptr) noexcept;",
         inner, instance,
     );
     writeln!(
         out,
-        "void cxxbridge1$rust_vec${}$reserve_total(::rust::Vec<{}> *ptr, ::std::size_t new_cap) noexcept;",
+        "void cxxbridge2$rust_vec${}$reserve_total(::rust::Vec<{}> *ptr, ::std::size_t new_cap) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "void cxxbridge1$rust_vec${}$set_len(::rust::Vec<{}> *ptr, ::std::size_t len) noexcept;",
+        "void cxxbridge2$rust_vec${}$set_len(::rust::Vec<{}> *ptr, ::std::size_t len) noexcept;",
         instance, inner,
     );
     writeln!(
         out,
-        "void cxxbridge1$rust_vec${}$truncate(::rust::Vec<{}> *ptr, ::std::size_t len) noexcept;",
+        "void cxxbridge2$rust_vec${}$truncate(::rust::Vec<{}> *ptr, ::std::size_t len) noexcept;",
         instance, inner,
     );
 }
@@ -1513,7 +1513,7 @@ fn write_rust_box_impl(out: &mut OutFile, key: NamedImplKey) {
         "{} *Box<{}>::allocation::alloc() noexcept {{",
         inner, inner,
     );
-    writeln!(out, "  return cxxbridge1$box${}$alloc();", instance);
+    writeln!(out, "  return cxxbridge2$box${}$alloc();", instance);
     writeln!(out, "}}");
 
     writeln!(out, "template <>");
@@ -1523,13 +1523,13 @@ fn write_rust_box_impl(out: &mut OutFile, key: NamedImplKey) {
         "void Box<{}>::allocation::dealloc({} *ptr) noexcept {{",
         inner, inner,
     );
-    writeln!(out, "  cxxbridge1$box${}$dealloc(ptr);", instance);
+    writeln!(out, "  cxxbridge2$box${}$dealloc(ptr);", instance);
     writeln!(out, "}}");
 
     writeln!(out, "template <>");
     begin_function_definition(out);
     writeln!(out, "void Box<{}>::drop() noexcept {{", inner);
-    writeln!(out, "  cxxbridge1$box${}$drop(this);", instance);
+    writeln!(out, "  cxxbridge2$box${}$drop(this);", instance);
     writeln!(out, "}}");
 }
 
@@ -1543,13 +1543,13 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     writeln!(out, "template <>");
     begin_function_definition(out);
     writeln!(out, "Vec<{}>::Vec() noexcept {{", inner);
-    writeln!(out, "  cxxbridge1$rust_vec${}$new(this);", instance);
+    writeln!(out, "  cxxbridge2$rust_vec${}$new(this);", instance);
     writeln!(out, "}}");
 
     writeln!(out, "template <>");
     begin_function_definition(out);
     writeln!(out, "void Vec<{}>::drop() noexcept {{", inner);
-    writeln!(out, "  return cxxbridge1$rust_vec${}$drop(this);", instance);
+    writeln!(out, "  return cxxbridge2$rust_vec${}$drop(this);", instance);
     writeln!(out, "}}");
 
     writeln!(out, "template <>");
@@ -1559,7 +1559,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
         "::std::size_t Vec<{}>::size() const noexcept {{",
         inner,
     );
-    writeln!(out, "  return cxxbridge1$rust_vec${}$len(this);", instance);
+    writeln!(out, "  return cxxbridge2$rust_vec${}$len(this);", instance);
     writeln!(out, "}}");
 
     writeln!(out, "template <>");
@@ -1571,7 +1571,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(
         out,
-        "  return cxxbridge1$rust_vec${}$capacity(this);",
+        "  return cxxbridge2$rust_vec${}$capacity(this);",
         instance,
     );
     writeln!(out, "}}");
@@ -1579,7 +1579,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     writeln!(out, "template <>");
     begin_function_definition(out);
     writeln!(out, "{} const *Vec<{0}>::data() const noexcept {{", inner);
-    writeln!(out, "  return cxxbridge1$rust_vec${}$data(this);", instance);
+    writeln!(out, "  return cxxbridge2$rust_vec${}$data(this);", instance);
     writeln!(out, "}}");
 
     writeln!(out, "template <>");
@@ -1591,7 +1591,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(
         out,
-        "  return cxxbridge1$rust_vec${}$reserve_total(this, new_cap);",
+        "  return cxxbridge2$rust_vec${}$reserve_total(this, new_cap);",
         instance,
     );
     writeln!(out, "}}");
@@ -1605,7 +1605,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(
         out,
-        "  return cxxbridge1$rust_vec${}$set_len(this, len);",
+        "  return cxxbridge2$rust_vec${}$set_len(this, len);",
         instance,
     );
     writeln!(out, "}}");
@@ -1615,7 +1615,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: NamedImplKey) {
     writeln!(out, "void Vec<{}>::truncate(::std::size_t len) {{", inner,);
     writeln!(
         out,
-        "  return cxxbridge1$rust_vec${}$truncate(this, len);",
+        "  return cxxbridge2$rust_vec${}$truncate(this, len);",
         instance,
     );
     writeln!(out, "}}");
@@ -1675,7 +1675,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$unique_ptr${}$null(::std::unique_ptr<{}> *ptr) noexcept {{",
+        "void cxxbridge2$unique_ptr${}$null(::std::unique_ptr<{}> *ptr) noexcept {{",
         instance, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::unique_ptr<{}>();", inner);
@@ -1686,7 +1686,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
         begin_function_definition(out);
         writeln!(
             out,
-            "{} *cxxbridge1$unique_ptr${}$uninit(::std::unique_ptr<{}> *ptr) noexcept {{",
+            "{} *cxxbridge2$unique_ptr${}$uninit(::std::unique_ptr<{}> *ptr) noexcept {{",
             inner, instance, inner,
         );
         writeln!(
@@ -1702,7 +1702,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$unique_ptr${}$raw(::std::unique_ptr<{}> *ptr, {} *raw) noexcept {{",
+        "void cxxbridge2$unique_ptr${}$raw(::std::unique_ptr<{}> *ptr, {} *raw) noexcept {{",
         instance, inner, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::unique_ptr<{}>(raw);", inner);
@@ -1711,7 +1711,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} const *cxxbridge1$unique_ptr${}$get(::std::unique_ptr<{}> const &ptr) noexcept {{",
+        "{} const *cxxbridge2$unique_ptr${}$get(::std::unique_ptr<{}> const &ptr) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return ptr.get();");
@@ -1720,7 +1720,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} *cxxbridge1$unique_ptr${}$release(::std::unique_ptr<{}> &ptr) noexcept {{",
+        "{} *cxxbridge2$unique_ptr${}$release(::std::unique_ptr<{}> &ptr) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return ptr.release();");
@@ -1729,7 +1729,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$unique_ptr${}$drop(::std::unique_ptr<{}> *ptr) noexcept {{",
+        "void cxxbridge2$unique_ptr${}$drop(::std::unique_ptr<{}> *ptr) noexcept {{",
         instance, inner,
     );
     if conditional_delete {
@@ -1774,7 +1774,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$shared_ptr${}$null(::std::shared_ptr<{}> *ptr) noexcept {{",
+        "void cxxbridge2$shared_ptr${}$null(::std::shared_ptr<{}> *ptr) noexcept {{",
         instance, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::shared_ptr<{}>();", inner);
@@ -1785,7 +1785,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
         begin_function_definition(out);
         writeln!(
             out,
-            "{} *cxxbridge1$shared_ptr${}$uninit(::std::shared_ptr<{}> *ptr) noexcept {{",
+            "{} *cxxbridge2$shared_ptr${}$uninit(::std::shared_ptr<{}> *ptr) noexcept {{",
             inner, instance, inner,
         );
         writeln!(
@@ -1801,7 +1801,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$shared_ptr${}$clone(::std::shared_ptr<{}> const &self, ::std::shared_ptr<{}> *ptr) noexcept {{",
+        "void cxxbridge2$shared_ptr${}$clone(::std::shared_ptr<{}> const &self, ::std::shared_ptr<{}> *ptr) noexcept {{",
         instance, inner, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::shared_ptr<{}>(self);", inner);
@@ -1810,7 +1810,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} const *cxxbridge1$shared_ptr${}$get(::std::shared_ptr<{}> const &self) noexcept {{",
+        "{} const *cxxbridge2$shared_ptr${}$get(::std::shared_ptr<{}> const &self) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return self.get();");
@@ -1819,7 +1819,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$shared_ptr${}$drop(::std::shared_ptr<{}> *self) noexcept {{",
+        "void cxxbridge2$shared_ptr${}$drop(::std::shared_ptr<{}> *self) noexcept {{",
         instance, inner,
     );
     writeln!(out, "  self->~shared_ptr();");
@@ -1848,7 +1848,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$weak_ptr${}$null(::std::weak_ptr<{}> *ptr) noexcept {{",
+        "void cxxbridge2$weak_ptr${}$null(::std::weak_ptr<{}> *ptr) noexcept {{",
         instance, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::weak_ptr<{}>();", inner);
@@ -1857,7 +1857,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$weak_ptr${}$clone(::std::weak_ptr<{}> const &self, ::std::weak_ptr<{}> *ptr) noexcept {{",
+        "void cxxbridge2$weak_ptr${}$clone(::std::weak_ptr<{}> const &self, ::std::weak_ptr<{}> *ptr) noexcept {{",
         instance, inner, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::weak_ptr<{}>(self);", inner);
@@ -1866,7 +1866,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$weak_ptr${}$downgrade(::std::shared_ptr<{}> const &shared, ::std::weak_ptr<{}> *weak) noexcept {{",
+        "void cxxbridge2$weak_ptr${}$downgrade(::std::shared_ptr<{}> const &shared, ::std::weak_ptr<{}> *weak) noexcept {{",
         instance, inner, inner,
     );
     writeln!(out, "  ::new (weak) ::std::weak_ptr<{}>(shared);", inner);
@@ -1875,7 +1875,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$weak_ptr${}$upgrade(::std::weak_ptr<{}> const &weak, ::std::shared_ptr<{}> *shared) noexcept {{",
+        "void cxxbridge2$weak_ptr${}$upgrade(::std::weak_ptr<{}> const &weak, ::std::shared_ptr<{}> *shared) noexcept {{",
         instance, inner, inner,
     );
     writeln!(
@@ -1888,7 +1888,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$weak_ptr${}$drop(::std::weak_ptr<{}> *self) noexcept {{",
+        "void cxxbridge2$weak_ptr${}$drop(::std::weak_ptr<{}> *self) noexcept {{",
         instance, inner,
     );
     writeln!(out, "  self->~weak_ptr();");
@@ -1907,7 +1907,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "::std::vector<{}> *cxxbridge1$std$vector${}$new() noexcept {{",
+        "::std::vector<{}> *cxxbridge2$std$vector${}$new() noexcept {{",
         inner, instance,
     );
     writeln!(out, "  return new ::std::vector<{}>();", inner);
@@ -1916,7 +1916,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "::std::size_t cxxbridge1$std$vector${}$size(::std::vector<{}> const &s) noexcept {{",
+        "::std::size_t cxxbridge2$std$vector${}$size(::std::vector<{}> const &s) noexcept {{",
         instance, inner,
     );
     writeln!(out, "  return s.size();");
@@ -1925,7 +1925,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} *cxxbridge1$std$vector${}$get_unchecked(::std::vector<{}> *s, ::std::size_t pos) noexcept {{",
+        "{} *cxxbridge2$std$vector${}$get_unchecked(::std::vector<{}> *s, ::std::size_t pos) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return &(*s)[pos];");
@@ -1935,7 +1935,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
         begin_function_definition(out);
         writeln!(
             out,
-            "void cxxbridge1$std$vector${}$push_back(::std::vector<{}> *v, {} *value) noexcept {{",
+            "void cxxbridge2$std$vector${}$push_back(::std::vector<{}> *v, {} *value) noexcept {{",
             instance, inner, inner,
         );
         writeln!(out, "  v->push_back(::std::move(*value));");
@@ -1945,7 +1945,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
         begin_function_definition(out);
         writeln!(
             out,
-            "void cxxbridge1$std$vector${}$pop_back(::std::vector<{}> *v, {} *out) noexcept {{",
+            "void cxxbridge2$std$vector${}$pop_back(::std::vector<{}> *v, {} *out) noexcept {{",
             instance, inner, inner,
         );
         writeln!(out, "  ::new (out) {}(::std::move(v->back()));", inner);

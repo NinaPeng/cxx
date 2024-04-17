@@ -142,13 +142,13 @@ pub(super) fn write(out: &mut OutFile) {
     }
 
     out.begin_block(Block::Namespace("rust"));
-    out.begin_block(Block::InlineNamespace("cxxbridge1"));
+    out.begin_block(Block::InlineNamespace("cxxbridge2"));
 
     let cxx_header = include.has_cxx_header();
     if !cxx_header {
         writeln!(out, "// #include \"rust/cxx.h\"");
 
-        ifndef::write(out, builtin.panic, "CXXBRIDGE1_PANIC");
+        ifndef::write(out, builtin.panic, "CXXBRIDGE2_PANIC");
 
         if builtin.rust_string {
             out.next_section();
@@ -178,20 +178,20 @@ pub(super) fn write(out: &mut OutFile) {
             writeln!(out, "::std::size_t align_of();");
         }
 
-        ifndef::write(out, builtin.rust_string, "CXXBRIDGE1_RUST_STRING");
-        ifndef::write(out, builtin.rust_str, "CXXBRIDGE1_RUST_STR");
-        ifndef::write(out, builtin.rust_slice, "CXXBRIDGE1_RUST_SLICE");
-        ifndef::write(out, builtin.rust_box, "CXXBRIDGE1_RUST_BOX");
-        ifndef::write(out, builtin.unsafe_bitcopy_t, "CXXBRIDGE1_RUST_BITCOPY_T");
-        ifndef::write(out, builtin.unsafe_bitcopy, "CXXBRIDGE1_RUST_BITCOPY");
-        ifndef::write(out, builtin.rust_vec, "CXXBRIDGE1_RUST_VEC");
-        ifndef::write(out, builtin.rust_fn, "CXXBRIDGE1_RUST_FN");
-        ifndef::write(out, builtin.rust_error, "CXXBRIDGE1_RUST_ERROR");
-        ifndef::write(out, builtin.rust_isize, "CXXBRIDGE1_RUST_ISIZE");
-        ifndef::write(out, builtin.opaque, "CXXBRIDGE1_RUST_OPAQUE");
-        ifndef::write(out, builtin.is_complete, "CXXBRIDGE1_IS_COMPLETE");
-        ifndef::write(out, builtin.layout, "CXXBRIDGE1_LAYOUT");
-        ifndef::write(out, builtin.relocatable, "CXXBRIDGE1_RELOCATABLE");
+        ifndef::write(out, builtin.rust_string, "CXXBRIDGE2_RUST_STRING");
+        ifndef::write(out, builtin.rust_str, "CXXBRIDGE2_RUST_STR");
+        ifndef::write(out, builtin.rust_slice, "CXXBRIDGE2_RUST_SLICE");
+        ifndef::write(out, builtin.rust_box, "CXXBRIDGE2_RUST_BOX");
+        ifndef::write(out, builtin.unsafe_bitcopy_t, "CXXBRIDGE2_RUST_BITCOPY_T");
+        ifndef::write(out, builtin.unsafe_bitcopy, "CXXBRIDGE2_RUST_BITCOPY");
+        ifndef::write(out, builtin.rust_vec, "CXXBRIDGE2_RUST_VEC");
+        ifndef::write(out, builtin.rust_fn, "CXXBRIDGE2_RUST_FN");
+        ifndef::write(out, builtin.rust_error, "CXXBRIDGE2_RUST_ERROR");
+        ifndef::write(out, builtin.rust_isize, "CXXBRIDGE2_RUST_ISIZE");
+        ifndef::write(out, builtin.opaque, "CXXBRIDGE2_RUST_OPAQUE");
+        ifndef::write(out, builtin.is_complete, "CXXBRIDGE2_IS_COMPLETE");
+        ifndef::write(out, builtin.layout, "CXXBRIDGE2_LAYOUT");
+        ifndef::write(out, builtin.relocatable, "CXXBRIDGE2_RELOCATABLE");
     }
 
     if builtin.rust_str_new_unchecked {
@@ -393,7 +393,7 @@ pub(super) fn write(out: &mut OutFile) {
     }
 
     out.end_block(Block::AnonymousNamespace);
-    out.end_block(Block::InlineNamespace("cxxbridge1"));
+    out.end_block(Block::InlineNamespace("cxxbridge2"));
 
     if builtin.trycatch {
         out.begin_block(Block::Namespace("behavior"));
